@@ -57,7 +57,7 @@ public class ForecastFragment extends Fragment {
 
     private void updateWeather() {
         Toast.makeText(getActivity(), "refreshing", Toast.LENGTH_LONG).show();
-        // loading the location from the preference stored by the user
+        // loading the location from the preferences stored by the user
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String location = sharedPreferences.getString(getString(R.string.pref_location_key),
                 getString(R.string.pref_location_default));
@@ -127,6 +127,7 @@ public class ForecastFragment extends Fragment {
                 mForecastAdapter.clear();
                 for (String forecast : resultsString) {
                     mForecastAdapter.add(forecast);
+                    Log.d(LOG_TAG, forecast);
                 }
             }
         }
@@ -146,7 +147,7 @@ public class ForecastFragment extends Fragment {
 
             String format = "json";
             String units = "metric";
-            String appID = "2de143494c0b295cca9337e1e96b00e0";
+            String appID = "998ffdced6d82c27460813e09de01146";
             int numDays = 7;
             // will contains all the results of the next 7days in an array of string
             String resultsString[] = new String[numDays];

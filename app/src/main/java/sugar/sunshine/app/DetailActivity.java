@@ -56,7 +56,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void openPreferredLocationInMap() {
-        // getting the location stored location in the shared preferences
+        // getting the location stored in the shared preferences
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         String location = sharedPrefs.getString(
                 getString(R.string.pref_location_key),
@@ -135,7 +135,7 @@ public class DetailActivity extends AppCompatActivity {
         private Intent createShareForecastIntent() {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             // to return to our application after sharing instead of staying in the app
-            // we are using for sharing
+            // we are using for the intent flag FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET
             shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_TEXT, forecast + FORECAST_SHARE_HASHTAG);
