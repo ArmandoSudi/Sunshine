@@ -21,7 +21,8 @@ import android.widget.Toast;
 
 public class DetailActivity extends AppCompatActivity {
 
-    private final String LOG_TAG = "DetailACtivity";
+    private final String LOG_TAG = DetailActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,73 +74,6 @@ public class DetailActivity extends AppCompatActivity {
         }
         else {
             Log.d(LOG_TAG, "Couldnt open " + location);
-        }
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class DetailFragment extends Fragment {
-
-        private final String INTENT_TEXT = "intent_text_value";
-        private static final String LOG_TAG = DetailFragment.class.getSimpleName();
-        private String forecast;
-        private static final String FORECAST_SHARE_HASHTAG = " #Sunshine";
-        private ShareActionProvider shareActionProvider;
-
-        public DetailFragment() {
-            setHasOptionsMenu(true);
-        }
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setHasOptionsMenu(true);
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-
-            View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-            TextView forecastTV = (TextView) rootView.findViewById(R.id.forecast_text);
-            Intent intent = getActivity().getIntent();
-            if( intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-                forecast = intent.getStringExtra(Intent.EXTRA_TEXT);
-                Toast.makeText(getActivity().getApplicationContext(),
-                        " " + forecast,
-                        Toast.LENGTH_LONG).show();
-                forecastTV.setText(" " + forecast);
-            }
-            return rootView;
-        }
-
-        @Override
-        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-            super.onCreateOptionsMenu(menu, inflater);
-            inflater.inflate(R.menu.detailfragment, menu);
-            // locate the menu item with the ShareActionProvider then hold onto it
-            // to set/change the share intent
-            MenuItem item = menu.findItem(R.id.action_share_item);
-            shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
-
-            // Attach an intent to this shareActionProvider, you can update at any time,
-            // like when the user select a new piece of data they might like to share
-            if(shareActionProvider != null) {
-                shareActionProvider.setShareIntent(createShareForecastIntent());
-            } else {
-                Log.d(LOG_TAG, "ShareActionProvider is null");
-            }
-        }
-
-        private Intent createShareForecastIntent() {
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            // to return to our application after sharing instead of staying in the app
-            // we are using for the intent flag FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET
-            shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, forecast + FORECAST_SHARE_HASHTAG);
-            return shareIntent;
         }
     }
 

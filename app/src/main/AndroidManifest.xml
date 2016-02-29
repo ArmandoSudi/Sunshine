@@ -5,6 +5,7 @@
     <!-- Permission required for the the app -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -39,6 +40,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="sugar.sunshine.app.MainActivity" />
         </activity>
+
+        <!-- Registering the provider -->
+        <provider
+            android:name=".data.WeatherProvider"
+            android:authorities="sugar.sunshine.app.data"
+            android:enabled="true"
+            android:exported="true"
+            />
     </application>
 
 </manifest>
