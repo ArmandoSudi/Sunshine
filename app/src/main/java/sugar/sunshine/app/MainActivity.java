@@ -1,6 +1,7 @@
 package sugar.sunshine.app;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -8,47 +9,37 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ForecastFragment.Callback {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+    private final String FORECASTFRAGMENT_TAG = "FFTAG";
+
+    private boolean mTwoPane;
+    private String mLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLocation = Utility.getPreferredLocation(this);
         Log.d(LOG_TAG, "calling onCreate");
         setContentView(R.layout.activity_main);
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d(LOG_TAG, "calling onStop");
+        Log.d(LOG_TAG, " --> "
+                + findViewById(R.id.weather_detail_container).toString());
+        if (findViewById(R.id.weather_detail_container) != null) {
+            // the detail container will be present only in large screen layouts, in which case the
+            // the activity shoud be in two pane layout
+            mTwoPane = true;
+            // to show the detail view, we add or replace the detail fragment
+            if (savedInstanceState == null) {
+                Log.d(LOG_TAG, "Adding the detail fragment dynamically from MainActivity");
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.weather_detail_container, new DetailFragment(), DETAILFRAGMENT_TAG)
+                        .commit();
+            }
+        } else { mTwoPane = false;}
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d(LOG_TAG, "calling onStart");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(LOG_TAG, "calling onResume");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d(LOG_TAG, "calling onPause");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(LOG_TAG, "calling onDestroy");
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,4 +67,45 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(LOG_TAG, "calling onResume");
+        String location = Utility.getPreferredLocation(this);
+        // update the location in our second pane using the fragment manager
+        if (location != null && !location.equals(mLocation)) {
+            ForecastFragment ff = (ForecastFragment)getSupportFragmentManager().findFragmentByTag(FORECASTFRAGMENT_TAG);
+            if ( null != ff ) {
+                ff.onLocationChanged();
+            }
+            mLocation = location;
+
+            DetailFragment df = (DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
+            if ( null != df ) {
+                df.onLocationChanged(mLocation);
+            }
+        }
+    }
+
+    @Override
+    public void onItemSelected(Uri contentUri) {
+        if(mTwoPane) {
+            // In two pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using  a
+            // fragment transaction
+            Bundle args = new Bundle();
+            args.putParcelable(DetailFragment.DETAIL_URI, contentUri);
+
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.weather_detail_container, fragment, DETAILFRAGMENT_TAG)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .setData(contentUri);
+            startActivity(intent);
+        }
+    }
 }

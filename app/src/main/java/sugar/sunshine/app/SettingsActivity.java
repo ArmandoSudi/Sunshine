@@ -1,5 +1,8 @@
 package sugar.sunshine.app;
 
+import android.annotation.TargetApi;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -64,6 +67,16 @@ public class SettingsActivity extends PreferenceActivity
             preference.setSummary(stringValue);
         }
         return true;
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public Intent getParentActivityIntent() {
+        // we use this to get the parent activity intent for the up button behaviour
+        // this will create a new intent to the main activity
+        // FLAG_ACTIVITY_CLEAR_TOP will checkm if the MainActivity is already running in our
+        // task and to use that one instead of creating a new main activity instance
+        return super.getParentActivityIntent().addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     }
 
 }
