@@ -25,8 +25,6 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         Log.d(LOG_TAG, "calling onCreate");
         setContentView(R.layout.activity_main);
 
-        Log.d(LOG_TAG, " --> "
-                + findViewById(R.id.weather_detail_container).toString());
         if (findViewById(R.id.weather_detail_container) != null) {
             // the detail container will be present only in large screen layouts, in which case the
             // the activity shoud be in two pane layout
@@ -103,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
                     .replace(R.id.weather_detail_container, fragment, DETAILFRAGMENT_TAG)
                     .commit();
         } else {
+            Log.v(LOG_TAG, "creating intent for single pane mode");
             Intent intent = new Intent(this, DetailActivity.class)
                     .setData(contentUri);
             startActivity(intent);

@@ -37,8 +37,10 @@ public class DetailActivity extends AppCompatActivity {
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(arguments);
 
+            Log.v(LOG_TAG, "attaching the DetailFragment to the DetailActivity");
+            Log.v(LOG_TAG, "data from intent" + getIntent().getData().toString());
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.weather_detail_container, new DetailFragment())
+                    .add(R.id.weather_detail_container, fragment)
                     .commit();
         }
     }
