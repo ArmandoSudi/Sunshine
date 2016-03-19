@@ -13,7 +13,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
-    private final String FORECASTFRAGMENT_TAG = "FFTAG";
+    private static final String FORECASTFRAGMENT_TAG = "FFTAG";
 
     private boolean mTwoPane;
     private String mLocation;
@@ -36,7 +36,13 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
                         .add(R.id.weather_detail_container, new DetailFragment(), DETAILFRAGMENT_TAG)
                         .commit();
             }
-        } else { mTwoPane = false;}
+        } else {
+            mTwoPane = false;
+//            getSupportActionBar().setElevation(0f);
+        }
+        ForecastFragment forecastFragment = ((ForecastFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.fragment_forecast));
+        forecastFragment.setUseTodayLayout(!mTwoPane);
     }
 
     @Override
