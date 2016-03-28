@@ -2,6 +2,8 @@ package sugar.sunshine.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
 import android.util.Log;
@@ -233,5 +235,20 @@ public class Utility {
             return R.drawable.art_clouds;
         }
         return -1;
+    }
+
+    /**
+     * Returns true of the network is available or about to become available
+     *
+     * @param c context used to get the ConnectivityManager
+     * @return
+     */
+    static public boolean isNetworkAvailable(Context c) {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager)c.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
     }
 }
