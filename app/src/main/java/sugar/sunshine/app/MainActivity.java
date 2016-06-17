@@ -68,9 +68,6 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
-        else if (id == R.id.action_view_location) {
-            Toast.makeText(this, "view location : MainActivity", Toast.LENGTH_SHORT).show();
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -86,12 +83,12 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
             if ( null != ff ) {
                 ff.onLocationChanged();
             }
-            mLocation = location;
 
             DetailFragment df = (DetailFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
             if ( null != df ) {
                 df.onLocationChanged(mLocation);
             }
+            mLocation = location;
         }
     }
 

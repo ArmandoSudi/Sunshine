@@ -6,7 +6,6 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.format.Time;
-
 /**
  * Created by sugar on 12-02-2016.
  */
@@ -111,6 +110,11 @@ public class  WeatherContract {
         // Degrees are meteorological degrees (e.g, 0 is north, 180 is south).  Stored as floats.
         public static final String COLUMN_DEGREES = "degrees";
 
+        /**
+         * Build a Uri pointing to the given ID
+         * @param id
+         * @return Uri pointing to the given ID
+         */
         public static Uri buildWeatherUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
@@ -134,10 +138,20 @@ public class  WeatherContract {
                     .build();
         }
 
+        /**
+         * Extract the value of the location setting from the given Uri based on its index
+         * @param uri
+         * @return the value of the location setting
+         */
         public static String getLocationSettingFromUri(Uri uri) {
             return uri.getPathSegments().get(1);
         }
 
+        /**
+         * Extract the value of the date from the given uri based on its index
+         * @param uri
+         * @return the value of the date
+         */
         public static long getDateFromUri(Uri uri){
             return Long.parseLong(uri.getPathSegments().get(2));
         }

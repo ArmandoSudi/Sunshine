@@ -13,7 +13,6 @@ public class WeatherDbHelper extends SQLiteOpenHelper{
 
     // if you change the database schema, you must increment the database version.
     private static final int DATABASE_VERSION = 2;
-
     public static String DATABASE_NAME = "weather.db";
 
     public WeatherDbHelper(Context context) {
@@ -22,7 +21,8 @@ public class WeatherDbHelper extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        final String SQL_CREATE_WEATHER_TABLE = "CREATE TABLE " + WeatherEntry.TABLE_NAME + " (" +
+        final String SQL_CREATE_WEATHER_TABLE = "CREATE TABLE " +
+                WeatherEntry.TABLE_NAME + " (" +
                 WeatherEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
 
                 // the ID of the loaction entry associated with this weather data

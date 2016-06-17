@@ -106,24 +106,19 @@ public class ForecastAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         ViewHolder viewHolder = (ViewHolder)view.getTag();
-        int weatherConditionID;
-        int iconID;
         int viewType = getItemViewType(cursor.getPosition());
+        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
         switch (viewType) {
             case VIEW_TYPE_TODAY: {
-                weatherConditionID = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
-                iconID = Utility.getArtResourceForWeatherCondition(weatherConditionID);
-                Log.d(LOG_TAG, "weather condition ID for TODAY : " + weatherConditionID );
-                Log.d(LOG_TAG, "icon ID for TODAY : " + iconID);
-                viewHolder.iconView.setImageResource(iconID);
+                // Get weather icon
+                viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(
+                    weatherId));
                 break;
             }
             case VIEW_TYPE_FUTURE_DAY: {
-                weatherConditionID = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
-                iconID = Utility.getIconResourceForWeatherCondition(weatherConditionID);
-                Log.d(LOG_TAG, "weather condition ID for FUTURE TODAY : " + weatherConditionID );
-                Log.d(LOG_TAG, "icon ID for FUTURE TODAY : " + iconID);
-                viewHolder.iconView.setImageResource(iconID);
+                // Get weather icon
+                viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(
+                        weatherId));
                 break;
             }
         }
@@ -132,14 +127,12 @@ public class ForecastAdapter extends CursorAdapter {
         long dateInMillis = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
         viewHolder.dateView.setText(Utility.getFriendlyDayString(context, dateInMillis));
 
-        // Read weather forecast from cursor
-        String description = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
+        // Get description from weather condition ID
+        String description = Utility.getStringForWeatherCondition(context, weatherId);
         viewHolder.descriptionView.setText(description);
 
-        // Read user preference for metric or imperial temperature units
-        boolean isMetric = Utility.isMetric(context);
-
-        // Read high temperature from cursor
+        // Read high temperature from cursor, the utility method returns temperature according
+        // the metrics set in the setting
         double high = cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
         viewHolder.highTempView.setText(Utility.formatTemperature(mContext, high));
 

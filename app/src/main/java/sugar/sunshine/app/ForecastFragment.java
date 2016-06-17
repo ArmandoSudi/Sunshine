@@ -1,10 +1,5 @@
 package sugar.sunshine.app;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -14,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,9 +20,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-
-import java.awt.font.TextAttribute;
-
 import sugar.sunshine.app.data.ForecastAdapter;
 import sugar.sunshine.app.data.WeatherContract;
 import sugar.sunshine.app.sync.SunshineSyncAdapter;
@@ -34,7 +27,10 @@ import sugar.sunshine.app.sync.SunshineSyncAdapter;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+    SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private final String LOG_TAG = ForecastFragment.class.getSimpleName();
 
     private static final int FORECAST_LOADER = 0;
     private ForecastAdapter mForecastAdapter;
@@ -172,6 +168,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private void updateWeather() {
         SunshineSyncAdapter.syncImmediately(getActivity());
     }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String locationSetting = Utility.getPreferredLocation(getActivity());
@@ -206,7 +203,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     // since we read the location when we create the loader, all we need to do is restart things
     void onLocationChanged( ) {
-        updateWeather();
         getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
     }
 
@@ -219,7 +215,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(Uri dateUri);
+        void onItemSelected(Uri dateUri);
     }
 
     /**
@@ -232,11 +228,48 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             if (null != tv) {
                 // if cursor is empty, why? do we have an invalid location
                 int message = R.string.empty_forecast_list;
-                if (!Utility.isNetworkAvailable(getActivity())){
-                    message = R.string.empty_forecast_list_no_network;
+                @SunshineSyncAdapter.LocationStatus int location = Utility.getLocationStatus(getActivity());
+                switch (location){
+                    case SunshineSyncAdapter.LOCATION_STATUS_SERVER_DOWN:
+                        message = R.string.empty_forecast_list_server_down;
+                        break;
+                    case SunshineSyncAdapter.LOCATION_STATUS_SERVER_INVALID:
+                        message = R.string.empty_forecast_list_server_error;
+                        break;
+                    case SunshineSyncAdapter.LOCATION_STATUS_INVALID:
+                        message = R.string.empty_forecast_list_invalid_location;
+                        break;
+                    default:
+                        if (!Utility.isNetworkAvailable(getActivity())){
+                            message = R.string.empty_forecast_list_no_network;
+                        }
                 }
                 tv.setText(message);
             }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        Log.v(LOG_TAG, "calling onResume");
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sp.registerOnSharedPreferenceChangeListener(this);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        Log.v(LOG_TAG, "calling onPause");
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sp.unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.v(LOG_TAG, "ForecastFragment: listening to preference change");
+        if (key.equals(getString(R.string.pref_location_status_key))){
+            updateEmptyView();
         }
     }
 }
